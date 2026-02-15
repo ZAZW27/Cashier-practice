@@ -1,17 +1,52 @@
 <x-layouts::app :title="__('Shoppe')">
     <div x-data="{ 
         cartOpen: false, 
-        cartItems: [] 
+        cartItems: [],
         addToCart(produk){
             let found = this.cartItems.find(i=> i.id === produk.id); 
             if(found){
                 found.quantity++; 
             }
             else{
-                this.cartItem.push({ ...product, quantity: 1}); 
+                this.cartItems.push({ ...produk, quantity: 1}); 
             }
+        },
+
+        clearItems(){
+            this.cartItems=[]; 
+        }, 
+
+        checkout() {
+            if (this.cartItems.length === 0) return alert('cart is empty!');
+
+            fetch('/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ items: this.cartItems })
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    // This will now alert the ACTUAL PHP error instead of a SyntaxError
+                    throw new Error(data.message || 'Server Error');
+                }
+                return data;
+            })
+            .then(data => {
+                alert(data.message);
+                this.clearItems(); 
+                this.cartOpen = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Checkout Failed: ' + error.message);
+            });
         }
-    }" class="relative overflow-x-hidden">
+    }" 
+    class="relative overflow-x-hidden">
         
         <div class="container mx-auto p-6">
             <div class="flex justify-between items-center mb-8">
@@ -48,7 +83,7 @@
                             </div>
 
                             <button 
-                                @click="cartItems.push({ id: {{ $item->id }}, nama: '{{ $item->nama }}', harga: {{ $item->harga }} })"
+                                @click="addToCart({id: {{ $item->id }}, nama: '{{ $item->nama }}', harga: {{ $item->harga }} })"
                                 class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg shadow-md active:scale-95 transition">
                                 Add to Cart
                             </button>
@@ -75,30 +110,38 @@
             </div>
 
             <div class="space-y-4 overflow-y-auto max-h-[70vh]">
-                <template x-for="(item, index) in cartItems" :key="index">
+                <template x-for="(item, index) in cartItems" :key="item.id">
                     <div class="flex justify-between items-center bg-stone-800 p-3 rounded-xl border border-stone-700">
                         <div>
                             <p class="text-white font-medium" x-text="item.nama"></p>
-                            <p class="text-emerald-500 text-sm font-mono" x-text="'Rp ' + item.harga.toLocaleString('id-ID')"></p>
+                            <p class="text-emerald-500 text-sm font-mono" x-text="'Rp ' + (item.harga * item.quantity).toLocaleString('id-ID')"></p>
                         </div>
-                        <button @click="cartItems.splice(index, 1)" class="text-red-400 hover:text-red-300 text-xs">
-                            Remove
-                        </button>
+                        
+                        <div class="flex items-center gap-3 bg-stone-900 px-3 py-1 rounded-lg border border-stone-700">
+                            <button 
+                                @click="item.quantity > 1 ? item.quantity-- : cartItems.splice(index, 1)" 
+                                class="text-stone-400 hover:text-white font-bold">-</button>
+                            
+                            <span class="text-white text-sm font-mono" x-text="item.quantity"></span>
+                            
+                            <button 
+                                @click="item.quantity++" 
+                                class="text-stone-400 hover:text-white font-bold">+</button>
+                        </div>
                     </div>
-                </template>
-                
-                <template x-if="cartItems.length === 0">
-                    <p class="text-center text-stone-500 mt-10">Your cart is empty...</p>
                 </template>
             </div>
 
             <div class="absolute bottom-10 left-6 right-6 border-t border-stone-800 pt-6">
                 <div class="flex justify-between mb-4 text-white font-bold">
                     <span>Total:</span>
-                    <span class="text-emerald-400" x-text="'Rp ' + cartItems.reduce((acc, i) => acc + i.harga, 0).toLocaleString('id-ID')"></span>
+                    <span class="text-emerald-400" x-text="'Rp ' + cartItems.reduce((acc, i) => (acc + i.harga) * i.quantity, 0).toLocaleString('id-ID')"></span>
                 </div>
-                <button class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase tracking-widest transition">
+                <button @click="checkout()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase tracking-widest transition">
                     Checkout Now
+                </button>
+                <button @click="clearItems()" class="w-full mt-4 bg-sky-600 hover:bg-sky-500 py-4 rounded-2xl font-black uppercase tracking-widest transition">
+                    Clear cart
                 </button>
             </div>
         </div>

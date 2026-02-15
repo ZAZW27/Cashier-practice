@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ProdukController; 
+use App\Http\Controllers\CheckoutController; 
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,5 +15,5 @@ Route::view('dashboard', 'dashboard')
 
 Route::get('/produks', [ProdukController::class, 'index'])->name('produk.index'); 
 Route::get('/produks/{produk}', [ProdukController::class, 'show'])->name('produk.show'); 
-
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store'); 
 require __DIR__.'/settings.php';

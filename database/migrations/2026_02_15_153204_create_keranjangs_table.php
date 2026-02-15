@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('pembelian_id')->constrained()->onDelete('cascade'); 
             $table->foreignId('produk_id')->constrained()->onDelete('cascade'); 
+            $table->integer('jumlah')->default(1); 
             $table->timestamps();
         });
     }

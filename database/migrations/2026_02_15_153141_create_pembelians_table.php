@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pembelians', function (Blueprint $table) {
             $table->id();
             $table->enum('status', ['pending', 'paid', 'late']); 
-            $table->foreignId('user_id')->contrained()->onDelete('cascade'); 
+            $table->foreignId('user_id')->nullable()->contrained()->onDelete('cascade'); 
             $table->timestamps();
         });
     }
