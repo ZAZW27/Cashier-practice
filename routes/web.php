@@ -13,7 +13,13 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/produks', [ProdukController::class, 'index'])->name('produk.index'); 
-Route::get('/produks/{produk}', [ProdukController::class, 'show'])->name('produk.show'); 
+Route::get('/produks', [ProdukController::class, 'index'])
+    ->name('produk.index'); 
+Route::get('/produks/create', [ProdukController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('produks.create');
+Route::post('/produk-store', [ProdukController::class, 'store'])->name('produk.store'); 
+
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store'); 
+
 require __DIR__.'/settings.php';
