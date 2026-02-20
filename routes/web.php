@@ -19,6 +19,12 @@ Route::get('/produks/create', [ProdukController::class, 'create'])
     ->middleware(['auth', 'verified'])
     ->name('produks.create');
 Route::post('/produk-store', [ProdukController::class, 'store'])->name('produk.store'); 
+Route::get('/produks/{produk}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
+Route::put('/produks/{produk}', [ProdukController::class, 'update'])->name('produk.update');
+
+Route::get('/api/produks/{produk}', function (App\Models\Produk $produk) {
+    return $produk->load(['ulasans.user']); 
+});
 
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store'); 
 

@@ -49,4 +49,30 @@ class ProdukController extends Controller
 
         return redirect()->route('produk.index')->with('success', 'Product added!');
     }
+
+    public function edit(\App\Models\Produk $produk)
+    {
+        return view('produk.edit', compact('produk'));
+    }
+
+    public function update(Request $request, \App\Models\Produk $produk)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'harga' => 'required|numeric',
+            'stock' => 'required|integer',
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('gambar')) {
+            // Optional: Delete the old image file here if it's not 'default.png'
+            $path = $request->file('gambar')->store('produk_images', 'public');
+            $validated['gambar'] = 'storage/' . $path;
+        }
+
+        $produk->update($validated);
+
+        return redirect()->route('produk.index')->with('success', 'Product updated successfully!');
+    }
 }

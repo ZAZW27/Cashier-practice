@@ -3,6 +3,15 @@
     <div x-data="{ 
         cartOpen: false, 
         cartItems: [],
+
+        detailOpen: false,
+        selectedProduk: null,
+        async openDetail(id) {
+            this.detailOpen = true;
+            const response = await fetch(`/api/produks/${id}`);
+            this.selectedProduk = await response.json();
+        },
+
         addToCart(produk){
             let found = this.cartItems.find(i=> i.id === produk.id); 
             if(found){
@@ -69,5 +78,6 @@
             </div>
         </div>
         @include('produk.partials.cart')
+        @include('produk.partials.produk-modal')
     </div>
 </x-layouts::app>

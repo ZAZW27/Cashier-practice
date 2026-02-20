@@ -18,4 +18,8 @@ class produk extends Model
     {
         return $this->hasMany(keranjang::class); 
     }
+
+    public function ulasans() {
+        return $this->hasMany(Ulasan::class);
+    }
 }
