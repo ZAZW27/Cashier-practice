@@ -4,6 +4,20 @@
         cartOpen: false, 
         cartItems: [],
 
+        get whatsappUrl() {
+            let baseUrl = 'https://wa.me/62895704176762?text=';
+            let pesan = 'Halo, saya ingin memesan:\n\n';
+            
+            this.cartItems.forEach((item, index) => {
+                pesan += `${index + 1}. ${item.nama} (x${item.quantity})\n`;
+            });
+            
+            let total = this.cartItems.reduce((acc, i) => acc + (i.harga * i.quantity), 0);
+            pesan += `\nTotal: Rp ${total.toLocaleString('id-ID')}`;
+            
+            return baseUrl + encodeURIComponent(pesan);
+        },
+
         detailOpen: false,
         selectedProduk: null,
         async openDetail(id) {
@@ -56,7 +70,7 @@
         }
     }" 
     class="relative overflow-x-hidden">
-    {{ auth()->user()->role }}
+    {{-- {{ auth()->user()->role }} --}}
         <div class="container mx-auto p-6">
             <a href="{{ route('produks.create') }}" class="relative bg-stone-800 border border-stone-600 p-3 rounded-xl hover:bg-stone-700 transition">
                 <span class="text-xl">Tambah</span>

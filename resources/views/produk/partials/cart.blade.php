@@ -43,9 +43,14 @@
             <span>Total:</span>
             <span class="text-emerald-400" x-text="'Rp ' + cartItems.reduce((acc, i) => (acc + i.harga) * i.quantity, 0).toLocaleString('id-ID')"></span>
         </div>
-        <button @click="checkout()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase tracking-widest transition">
-            Checkout Now
-        </button>
+        
+        <a :href="whatsappUrl" 
+        target="_blank"
+        class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase tracking-widest transition inline-block text-center text-white">
+            <button @click="checkout()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase tracking-widest transition">
+                Checkout Now
+            </button>
+        </a>
         <button @click="clearItems()" class="w-full mt-4 bg-sky-600 hover:bg-sky-500 py-4 rounded-2xl font-black uppercase tracking-widest transition">
             Clear cart
         </button>
